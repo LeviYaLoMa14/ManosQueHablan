@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Manos que Hablan: Un Viaje a la Lengua de Señas Mexicana</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Chosen Palette: Armonía Terrenal -->
+<!-- Application Structure Plan: Se ha diseñado una aplicación de una sola página con navegación fluida por secciones. La estructura guía al usuario en un viaje lógico: 1) un 'Héroe' para captar la atención, 2) 'Por Qué Importa' para crear conciencia sobre el contexto y los desafíos, 3) 'Explora la Lengua' para una introducción interactiva a la LSM (alfabeto, vocabulario), 4) 'La Brecha Educativa' para visualizar con datos el problema central, y 5) 'Únete a la Comunidad' para ofrecer pasos de acción concretos. Esta estructura transforma un informe denso en una experiencia narrativa, moviendo al usuario de la conciencia al aprendizaje y, finalmente, a la acción, lo cual es más efectivo para la retención y el impacto que un diseño que siga rígidamente los capítulos del reporte. -->
+<!-- Visualization & Content Choices: 1. Datos Clave (Por Qué Importa) -> Meta: Informar -> Presentación: Tarjetas con íconos y cifras grandes -> Interacción: Hover para resaltar -> Justificación: Resalta estadísticas impactantes de forma visual y digerible. 2. Línea de Tiempo (Por Qué Importa) -> Meta: Organizar -> Presentación: Eje cronológico con HTML/CSS -> Interacción: Scroll -> Justificación: Presenta la historia de forma secuencial y clara. 3. Alfabeto Dactilológico (Explora la Lengua) -> Meta: Educar -> Presentación: Rejilla de tarjetas -> Interacción: Clic para ampliar en un modal -> Justificación: Permite el aprendizaje interactivo y enfocado de un pilar de la LSM. 4. Diccionario Básico (Explora la Lengua) -> Meta: Organizar/Educar -> Presentación: Galería filtrable -> Interacción: Botones de filtro para cambiar las señas visibles -> Justificación: Simula una herramienta de aprendizaje práctico y da control al usuario. 5. Gráfico de Barras (La Brecha Educativa) -> Meta: Comparar -> Presentación: Gráfico de Chart.js -> Interacción: Animación al aparecer, tooltips al pasar el ratón -> Justificación: Es la forma más poderosa y clara de mostrar la disparidad educativa, un punto clave del informe. 6. Lista de Recursos (Únete a la Comunidad) -> Meta: Organizar -> Presentación: Acordeón colapsable -> Interacción: Clic para expandir/colapsar -> Justificación: Organiza una gran cantidad de información de manera compacta y accesible, evitando una lista abrumadora. -->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+</head>
+
+
+<body class="antialiased">
+<!-- Header & Navigation -->
+
+
+<!-- Alphabet Modal -->
+<div class="modal fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 opacity-0 invisible z-50" id="alphabet-modal">
+<div class="bg-white rounded-lg shadow-2xl w-full max-w-sm relative transform scale-95 transition-transform duration-300">
+<button class="absolute -top-3 -right-3 bg-[#C07B4F] text-white rounded-full h-8 w-8 flex items-center justify-center shadow-lg" id="modal-close-button">×</button>
+<div class="p-6 text-center" id="modal-content">
+<!-- Content will be injected by JS -->
+</div>
+</div>
+</div>
+
+<script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Data
+            const alphabet = [
+              "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "LL", "M",
+              "N", "Ñ", "O", "P", "Q", "R", 'RR', "S", "T", "U", "V", "W", "X", "Y", "Z"
+            ];
+            const dictionary = [
+                { term: 'Hola', category: 'saludos', video: "https://www.youtube.com/shorts/JPJ5oHsExdc?feature=share" }, { term: 'Adiós', category: 'saludos', video:'https://www.youtube.com/shorts/jQ2L0K0FoGY'},
+                { term: 'Buenos días', category: 'saludos', video:'https://www.youtube.com/shorts/UClL8_YjsKU?feature=share'}, { term: 'Gracias', category: 'saludos', video:'https://www.youtube.com/shorts/HAOZCVi96Z0?feature=share' },
+                { term: '¿Cómo estás?', category: 'preguntas', video:"https://youtu.be/x7zFMacTe04" }, { term: '¿Cómo te llamas?', category: 'preguntas', video: "https://youtu.be/lVeQV6cgUE8" },
+                { term: '¿Dónde?', category: 'preguntas', video:'https://www.youtube.com/shorts/Nd4T9V0ijXM?feature=share'}, { term: '¿Por qué?', category: 'preguntas', video:"https://www.youtube.com/shorts/WRMbNuwlSCE?feature=share"},
+                { term: 'Mamá', category: 'familia', video:"https://www.youtube.com/shorts/BEeZVMqdcaQ?feature=share" }, { term: 'Papá', category: 'familia', video:"https://www.youtube.com/shorts/Zav7eyTr6po?feature=share" },
+                { term: 'Hermano', category: 'familia', video:"https://www.youtube.com/shorts/v3s3bsZQVOs?feature=share"}, { term: 'Mejor amigo', category: 'familia', video:"https://www.youtube.com/shorts/CNN07NRZjhw?feature=share" },
+            ];
+            const resources = [
+      {
+        title:"Talleres y Cursos",
+        content:`
+          <ul class="list-disc pl-4 space-y-2">
+            <li>
+              <a href="https://pilares.cdmx.gob.mx/curso/3/lengua-de-senas-mexicana" target="_blank" rel="noopener noreferrer"
+                 class="text-[#C07B4F] hover:underline">
+                Taller PILARES CDMX: Lengua de Señas Mexicana
+              </a>
+            </li>
+          </ul>`
+      },
+      {
+        title:"Diccionarios y Material Didáctico",
+        content:`
+          <ul class="list-disc pl-4 space-y-2">
+            <li>
+              <a href="https://educacionespecial.sep.gob.mx/storage/recursos/2023/05/xzrfl019nV-4Diccionario_lengua_%20Senas.pdf"
+                 target="_blank" rel="noopener noreferrer"
+                 class="text-[#C07B4F] hover:underline">
+                Diccionario de Lengua de Señas Mexicana (SEP)
+              </a>
+            </li>
+            <li>
+              <a href="https://dgb.sep.gob.mx/storage/recursos/2023/09/VoNwytznBQ-Infografia_LenguaDeSen%C3%9Eas%2020092023.pdf"
+                 target="_blank" rel="noopener noreferrer"
+                 class="text-[#C07B4F] hover:underline">
+                Infografía – Día Internacional de las Lenguas de Señas
+              </a>
+            </li>
+          </ul>`
+      },
+      {
+        title:"Organizaciones para Apoyar o Solicitar Apoyo",
+        content:`
+          <ul class="list-disc pl-4 space-y-2">
+            <li>
+              <a href="https://movimientodeaccionsocial.org.mx/organizaciones-mas/asociacion-mexicana-para-el-diagnostico-y-tratamiento-de-la-sordera-ac"
+                 target="_blank" rel="noopener noreferrer"
+                 class="text-[#C07B4F] hover:underline">
+                Asociación Mexicana para el Diagnóstico y Tratamiento de la Sordera, A.C.
+              </a>
+            </li>
+            <li>
+              <a href="https://movimientodeaccionsocial.org.mx/organizaciones-mas/asociacion-mexicana-para-la-audicion-ayudanos-a-oir-ac"
+                 target="_blank" rel="noopener noreferrer"
+                 class="text-[#C07B4F] hover:underline">
+                Ayúdanos a Oír, A.C.
+              </a>
+            </li>
+            <li>
+              <a href="https://copesor.sordosmexico.org/" target="_blank" rel="noopener noreferrer"
+                 class="text-[#C07B4F] hover:underline">
+                CoPeSor – Coalición de Personas Sordas
+              </a>
+            </li>
+          </ul>`
+      }
+    ];
+
+            // Mobile Menu Toggle
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            document.querySelectorAll('#mobile-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+
+            // Navigation Active State on Scroll
+            const sections = document.querySelectorAll('main section');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const observerOptions = { root: null, rootMargin: '0px', threshold: 0.4 };
+
+            const sectionObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                sectionObserver.observe(section);
+            });
+
+            // Alphabet Grid Population & Modal Logic
+            const alphabetGrid = document.getElementById('alphabet-grid');
+            const modal = document.getElementById('alphabet-modal');
+            const modalContent = document.getElementById('modal-content');
+            const modalCloseButton = document.getElementById('modal-close-button');
+            const customImages = {
+            A: "https://www.dropbox.com/scl/fi/zlsy75281fsg2or37d7km/A.png?rlkey=4qv6blurp5vc33n6qb83lrx5l&st=4i88z7fq&raw=1",
+            B: "https://www.dropbox.com/scl/fi/78lkz9gh21cnmpwyoe87m/B.png?rlkey=q3ecrt6qrjukxdtamcxb0hw8c&st=pgk76yyl&raw=1",
+            C: "https://www.dropbox.com/scl/fi/v3jsncl8jtmsvn6bvrhu2/C.png?rlkey=6benj6je1mcluk0jhi9rsvv5o&st=tz3anaj2&raw=1",
+            D: "https://www.dropbox.com/scl/fi/nxrz6q7m9doyw89lbteyb/D.png?rlkey=q8kva3ngfdg9hm2wso0n5ee8k&st=ud4etb90&raw=1",
+            E: "https://www.dropbox.com/scl/fi/r1xs4swgnw5okgidgpb4y/E.png?rlkey=v552eavtlpdrfrhncc75e0kbc&st=5dlpj2s2&raw=1",
+            F: "https://www.dropbox.com/scl/fi/7u0zkzaapxsq8lwdepqoq/F.png?rlkey=8zxdush61r4htsg38hl24egdu&st=lbphp35i&raw=1",
+            G: "https://www.dropbox.com/scl/fi/0cg41gohs013ud2j9pi20/G.png?rlkey=xtnw4u7fe4u7ftqv8gzj0itbx&st=5z88e59t&raw=1",
+            H: "https://www.dropbox.com/scl/fi/0c0a3uuti6sqt5msvz113/H.png?rlkey=iwcbu41ia9gl7tep280xmxz8l&st=8r4rli9p&raw=1",
+            I: "https://www.dropbox.com/scl/fi/xtx6uzv62c2x4r29o67mn/I.png?rlkey=zissyqy0d1gcbpgc0in75up33&st=52cstf9g&raw=1",
+            J: "https://www.dropbox.com/scl/fi/gugb4pjp4yk8ljsk29m46/J.png?rlkey=q4eudqn7lsxc873jnnntgcitr&st=snezm111&raw=1",
+            K: "https://www.dropbox.com/scl/fi/jhhrc6fbid455pwkdeuzs/K.png?rlkey=r42cybn27x3izrphjo6dhfs2c&st=0lnjub2f&raw=1",
+            L: "https://www.dropbox.com/scl/fi/ae27lcnoskxkclsriw6uq/L.png?rlkey=v27o99fmyufj9s1aj9qi6xkk4&st=xig7vt1m&raw=1",
+            LL: "https://www.dropbox.com/scl/fi/5oq6hrfghk2szk8kk8361/LLRR.jpg?rlkey=mi87xe3hkong0hgfjqlhioefx&st=eiht81y0&raw=1",
+            M: "https://www.dropbox.com/scl/fi/cxh2k24bs5l883zltu28b/M.png?rlkey=ow60tn1w9y9bq9lm2lt00axff&st=02h1s0lt&raw=1",
+            N: "https://www.dropbox.com/scl/fi/z9thcvn7cx1142slpkoep/N.png?rlkey=o7a8icw2z51ydxke1d5b5jxt2&st=vbbow6hh&raw=1",
+            Ñ: "https://www.dropbox.com/scl/fi/au7fd5p97gkiq1z5wqye5/.png?rlkey=w6xyn5fagna34eagve9dczuqr&st=z097gfa0&raw=1",
+            O: "https://www.dropbox.com/scl/fi/l45yudd10i5brz8n4iljo/O.png?rlkey=jh6odnc9aia0jr7ff9nlxoaij&st=ewtfwt1c&raw=1",
+            P: "https://www.dropbox.com/scl/fi/9o68kzzbnk9hv6nyj54l3/P.png?rlkey=t1bwfvnfp96qirqaub3224j85&st=fdttg81j&raw=1",
+            Q: "https://www.dropbox.com/scl/fi/6wtal3vtfi7nxis5nu1dw/Q.png?rlkey=3fjvwi1u5bjyrnr2y8pkwul24&st=m024678c&raw=1",
+            R: "https://www.dropbox.com/scl/fi/jy4ytxeseeprf1m04iav3/R.png?rlkey=ebd9q2847btup3tnpdm4nfzxv&st=s1rhzs4x&raw=1",
+            RR: "https://www.dropbox.com/scl/fi/5oq6hrfghk2szk8kk8361/LLRR.jpg?rlkey=mi87xe3hkong0hgfjqlhioefx&st=eiht81y0&raw=1",
+            S: "https://www.dropbox.com/scl/fi/cdohlb86abbbe0vol11co/S.png?rlkey=vcet66hstr76ri428mw5n8auy&st=m77h4od0&raw=1",
+            T: "https://www.dropbox.com/scl/fi/j546qbjzjvmnewo3j4h19/T.png?rlkey=dd0nzyw9ri57ezkpq5n99orjv&st=ww1farr6&raw=1",
+            U: "https://www.dropbox.com/scl/fi/47u51zzwb80bb56jecc6y/U.png?rlkey=lqbrvquz0xa4ksbuhwvnaaq64&st=8wykxenr&raw=1",
+            V: "https://www.dropbox.com/scl/fi/ynj5wjeyw92qimv2hoeuz/V.png?rlkey=c3gbvddin8fu3w4bqjdpuy7xs&st=u272p76k&raw=1",
+            W: "https://www.dropbox.com/scl/fi/t2mixxdz4wht4ak84mj7y/W.png?rlkey=rh7l53dggi18aiy80lh2vuyk7&st=eactsdui&raw=1",
+            X: "https://www.dropbox.com/scl/fi/2z788hndam4qfyykpj1ij/X.png?rlkey=rfceqbyqyt3dej7t4k7iayci7&st=udgormcl&raw=1",
+            Y: "https://www.dropbox.com/scl/fi/acnydehmvz0ek1b1l7ojw/Y.png?rlkey=cm87axiku33u9lsucxdscun8z&st=jd9gv07j&raw=1",
+            Z: "https://www.dropbox.com/scl/fi/208cfjhkbdhl7h4epsatp/Z.png?rlkey=j5rddmt9fdhggfw5stgmcmg70&st=dlscirqa&raw=1"
+            };
+            const alphabetDescriptions = {
+              A: "A: Con la mano cerrada, se muestran las uñas y se estira el dedo pulgar hacia un lado. La palma mira al frente.",
+              B: "B: Los dedos índice, medio, anular y meñique se estiran bien unidos y el pulgar se dobla hacia la palma, la cual mira al frente.",
+              C: "C: Los dedos índice, medio, anular y meñique se mantienen bien unidos y en posición cóncava; el pulgar también se pone en esa posición. La palma mira a un lado.",
+              D: "D: Los dedos medio, anular, meñique y pulgar se unen por las puntas y el dedo índice se estira. La palma mira al frente.",
+              E: "E: Se doblan los dedos completamente, y se muestran las uñas. La palma mira al frente.",
+              F: "F: Con la mano abierta y los dedos bien unidos, se dobla el índice hasta que su parte lateral toque la yema del pulgar. La palma mira a un lado.",
+              G: "G: Se cierra la mano y los dedos índice y pulgar se estiran. La palma mira hacia usted.",
+              H: "H: Con la mano cerrada y los dedos índice y medio bien estirados y unidos, se extiende el dedo pulgar señalando hacia arriba. La palma mira hacia usted.",
+              I: "I: Con la mano cerrada, el dedo meñique se estira señalando hacia arriba. La palma se pone de lado.",
+              J: "J: Con la mano cerrada, el dedo meñique bien estirado señalando hacia arriba y la palma a un lado dibuja una j en el aire.",
+              K: "K: Se cierra la mano con los dedos índice, medio y pulgar estirados. La yema del pulgar se pone entre el índice y el medio. Se mueve la muñeca hacia arriba.",
+              L: "L: Con la mano cerrada y los dedos índice y pulgar estirados, se forma una l. La palma mira al frente.",
+              LL: "doble L (ll): se representa con un movimiento sutil de la mano, similar a la seña de la letra L, pero con un ligero movimiento hacia afuera.",
+              M: "M: Con la mano cerrada, se ponen los dedos índice, medio y anular sobre el pulgar.",
+              N: "N: Con la mano cerrada, se ponen los dedos índice y medio sobre el pulgar.",
+              Ñ: "Ñ: Con la mano cerrada, se ponen los dedos índice y medio sobre el pulgar. Se mueve la muñeca a los lados.",
+              O: "O: Con la mano se forma una letra o. Todos los dedos se tocan por las puntas.",
+              P: "P: Con la mano cerrada y los dedos índice, medioy pulgar estirados, se pone la yema del pulgarentre el índice y el medio.",
+              Q: "Q: Con la mano cerrada, se ponen los dedos índice y pulgar en posición de garra. La palma mira hacia abajo, y se mueve la muñeca hacia los lados.",
+              R: "R: Con la mano cerrada, se estiran y entrelazanlos dedos índice y medio. La palma mira alfrente.",
+              RR: "Doble R o RR: Se realiza un movimiento rápido de la mano de esta posición, simulando el sonido vibrante de la rr ",
+              S: "S: Con la mano cerrada, se pone el pulgar sobre los otros dedos. La palma mira al frente.",
+              T: "T: Con la mano cerrada, el pulgar se pone entre el índice y el medio. La palma mira al frente.",
+              U: "U: Con la mano cerrada, se estiran los dedos índice y medio unidos. La palma mira al frente.",
+              V: "V: Con la mano cerrada, se estiran los dedos índice y medio separados. La palma mira alfrente.",
+              W: "W: Con la mano cerrada, se estiran los dedos índice, medio y anular separados. La palma mira al frente.",
+              X: "X: Con la mano cerrada, el índice y el pulgar en posición de garra y la palma dirigida a un lado, se realiza un movimiento al frente y de regreso.",
+              Y: "Y: Con la mano cerrada, se estira el meñique y el pulgar. La palma mira hacia usted.",
+              Z: "Z: Con la mano cerrada, el dedo índice estirado y la palma al frente, se dibuja una letra z en el aire.",
+            };
+
+            alphabet.forEach(letter => {
+                const card = document.createElement('div');
+                card.className = 'bg-stone-100 rounded-lg p-2 flex flex-col items-center justify-center aspect-square cursor-pointer hover:bg-[#F0E6DA] hover:shadow-md transition-all duration-300 transform hover:-translate-y-1';
+                card.setAttribute('role', 'button');
+                card.setAttribute('tabindex', '0');
+                card.dataset.letter = letter;
+                
+                const img = document.createElement('img');
+                img.src = customImages[letter] || `https://placehold.co/100x100/C07B4F/FFFFFF?text=${letter}&font=inter`;
+                img.alt = `Letra ${letter} en LSM`;
+                img.className = 'w-full h-auto object-cover rounded-md';
+
+                const p = document.createElement('p');
+                p.className = 'mt-2 font-bold text-lg text-stone-700';
+                p.textContent = letter;
+                
+                card.appendChild(img);
+                card.appendChild(p);
+                alphabetGrid.appendChild(card);
+            });
+            
+            alphabetGrid.addEventListener('click', (e) => {
+                const card = e.target.closest('[data-letter]');
+                if(card) {
+                    const letter = card.dataset.letter;
+                      modalContent.innerHTML = `
+                          <img src="${customImages[letter] || `https://placehold.co/300x300/C07B4F/FFFFFF?text=${letter}&font=inter`}" alt="Letra ${letter} en LSM" class="w-full h-auto object-cover rounded-lg mb-4">
+                          <p class="text-lg text-stone-700 mt-2">${alphabetDescriptions[letter] || 'Letra ' + letter + ' en LSM.'}</p>
+                      `;
+
+
+                    modal.classList.remove('invisible', 'opacity-0');
+                    document.body.style.overflow = 'hidden';
+                }
+            });
+
+            const closeModal = () => {
+                modal.classList.add('invisible', 'opacity-0');
+                document.body.style.overflow = '';
+            }
+
+            modalCloseButton.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+            
+            document.addEventListener('keydown', (e) => {
+                 if (e.key === "Escape" && !modal.classList.contains('invisible')) {
+                    closeModal();
+                }
+            });
+
+            // Dictionary Population & Filtering
+            const dictionaryGrid = document.getElementById('dictionary-grid');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+
+            const populateDictionary = (filter = 'all') => {
+                dictionaryGrid.innerHTML = '';
+                const filteredItems = filter === 'all' ? dictionary : dictionary.filter(item => item.category === filter);
+
+            filteredItems.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'dictionary-item bg-white rounded-lg shadow-sm overflow-hidden';
+                card.dataset.category = item.category;
+
+                let mediaContent = '';
+                if (item.video) {
+                    // Soporte para YouTube normal, shorts y youtu.be
+                    let videoId = '';
+                    if (item.video.includes('youtube.com/watch?v=')) {
+                        videoId = item.video.split('watch?v=')[1].split('&')[0];
+                    } else if (item.video.includes('youtube.com/shorts/')) {
+                        videoId = item.video.split('shorts/')[1].split('?')[0];
+                    } else if (item.video.includes('youtu.be/')) {
+                        videoId = item.video.split('youtu.be/')[1].split('?')[0];
+                    }
+                    if (videoId) {
+                        mediaContent = `
+                            <iframe 
+                                width="100%" 
+                                height="100%" 
+                                src="https://www.youtube.com/embed/${videoId}" 
+                                title="Video de YouTube" 
+                                frameborder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                                allowfullscreen
+                                class="rounded-md"
+                            ></iframe>
+                        `;
+                    } else {
+                        // Es un mp4, webm, etc.
+                        mediaContent = `<video src="${item.video}" controls class="w-full h-full object-cover rounded-md" preload="metadata"></video>`;
+                    }
+                } else {
+                    // No hay video
+                    mediaContent = `
+                        <svg class="w-12 h-12 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    `;
+                }
+                card.innerHTML = `
+                    <div class="bg-stone-200 aspect-video flex items-center justify-center">
+                        ${mediaContent}
+                    </div>
+                    <p class="p-4 font-semibold text-center text-stone-700">
+                      <a href="${item.video ? item.video : '#'}" target="_blank" rel="noopener noreferrer" class="text-[#C07B4F] hover:underline">
+                        ${item.term}
+                      </a>
+                    </p>
+                `;
+
+                dictionaryGrid.appendChild(card);
+            });
+
+            };
+            
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const filter = button.dataset.filter;
+                    populateDictionary(filter);
+                    filterButtons.forEach(btn => {
+                        btn.classList.remove('bg-[#C07B4F]', 'text-white');
+                        btn.classList.add('bg-stone-200', 'text-stone-700');
+                    });
+                    button.classList.add('bg-[#C07B4F]', 'text-white');
+                    button.classList.remove('bg-stone-200', 'text-stone-700');
+                });
+            });
+
+            populateDictionary();
+
+            
+
+
+            // Accordion Population
+            const accordionContainer = document.getElementById('accordion-container');
+            resources.forEach((item, index) => {
+                const accordionItem = document.createElement('div');
+                accordionItem.className = 'border border-stone-200 rounded-lg overflow-hidden';
+                accordionItem.innerHTML = `
+                    <h2>
+                        <button type="button" class="flex items-center justify-between w-full p-5 font-medium text-left text-stone-700 bg-stone-50 hover:bg-stone-100" data-accordion-target="#accordion-body-${index}" aria-expanded="false" aria-controls="accordion-body-${index}">
+                            <span>${item.title}</span>
+                             <svg data-accordion-icon class="w-6 h-6 shrink-0 transition-transform" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        </button>
+                    </h2>
+                    <div id="accordion-body-${index}" class="hidden p-5 border-t border-stone-200 bg-white">
+                        <div class="text-stone-600">${item.content}</div>
+                    </div>
+                `;
+                accordionContainer.appendChild(accordionItem);
+            });
+
+            // Accordion Logic
+            accordionContainer.addEventListener('click', e => {
+                const button = e.target.closest('[data-accordion-target]');
+                if (button) {
+                    const targetId = button.getAttribute('data-accordion-target');
+                    const body = document.querySelector(targetId);
+                    const isExpanded = button.getAttribute('aria-expanded') === 'true';
+                    
+                    button.setAttribute('aria-expanded', !isExpanded);
+                    body.classList.toggle('hidden');
+                    const icon = button.querySelector('[data-accordion-icon]');
+                    icon.classList.toggle('rotate-180');
+                }
+            });
+        });
+    
+/* =====  GRÁFICO POBLACIÓN SORDA Y USUARIOS LSM  ===== */
+const popCtx = document.getElementById('popChart').getContext('2d');
+new Chart(popCtx, {
+  type: 'bar',
+  data: {
+    labels: ['Discapacidad auditiva', 'Habla LSM'],
+    datasets: [{
+      label: '% de la población mexicana',
+      data: [1.74, 0.076],
+      backgroundColor: [
+        'rgba(192,123,79,0.6)',
+        'rgba(75,66,59,0.6)'
+      ],
+      borderColor: [
+        'rgba(192,123,79,1)',
+        'rgba(75,66,59,1)'
+      ],
+      borderWidth: 1
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: {
+        beginAtZero: true,
+        max: 2,
+        ticks: {
+          callback: v => v + '%'
+        }
+      }
+    },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => ctx.parsed.y.toFixed(3) + ' %'
+        }
+      }
+    }
+  }
+});
+
+/* ===== GRÁFICO COMPARATIVO RESPECTO AL 100 % ===== */
+const cmpCtx=document.getElementById('popCompareChart').getContext('2d');
+new Chart(cmpCtx,{
+  type:'bar',
+  data:{
+    labels:['Discapacidad auditiva','Habla LSM'],
+    datasets:[{
+      label:'% del total de la población mexicana',
+      data:[1.74,0.076],
+      backgroundColor:['rgba(192,123,79,0.6)','rgba(75,66,59,0.6)'],
+      borderColor:['rgba(192,123,79,1)','rgba(75,66,59,1)'],
+      borderWidth:1
+    }]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    scales:{
+      y:{
+        beginAtZero:true,
+        max:100,
+        ticks:{
+          callback:v=>v+'%'
+        }
+      }
+    },
+    plugins:{
+      legend:{display:false},
+      tooltip:{callbacks:{label:ctx=>ctx.parsed.y.toFixed(3)+' %'}}
+    }
+  }
+});
+</script>
+</body>
+</html>
