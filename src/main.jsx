@@ -7,7 +7,10 @@ import App from "./App.jsx";
 import HomePage from "./pages/HomePage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
-import { AuthProvider } from "./context/AuthContext.jsx"; // 👈
+import { AuthProvider } from "./context/AuthContext.jsx"; 
+import ProfilePage from './pages/ProfilePage.jsx';
+import MyProgressPage from './pages/MyProgressPage.jsx';
+import RequireAuth from './components/common/RequireAuth.jsx';
 // ...importa aquí tus otras páginas (ProfilePage, MyProgressPage, etc.)
 
 // 2. Define tu "mapa" de rutas
@@ -29,13 +32,29 @@ const router = createBrowserRouter([
         path: '/register',
         element: <RegisterPage />,
       },
-      // {
-      //   path: '/perfil',
-      //   element: <ProfilePage />
-      // },
+      // Ruta protegida: Perfil
+      {
+        path: '/profile',
+        element: (
+          <RequireAuth>
+            <ProfilePage />
+          </RequireAuth>
+        ),
+      },
+
+      // Ruta protegida: Progreso
+      {
+        path: '/progress',
+        element: (
+          <RequireAuth>
+            <MyProgressPage />
+          </RequireAuth>
+        ),
+      },
     ],
   },
 ]);
+      
 
 // 4. "Provee" o entrega estas rutas a tu aplicación
 ReactDOM.createRoot(document.getElementById("root")).render(
