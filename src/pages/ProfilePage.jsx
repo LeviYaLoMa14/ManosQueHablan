@@ -85,7 +85,7 @@ function ProfilePage() {
   };
 
   const handleChangePhoto = () => {
-    alert("En el futuro podrás cambiar tu foto de perfil 🙂");
+    alert("En el futuro podrás cambiar tu foto de perfil");
   };
 
   if (!user) {
