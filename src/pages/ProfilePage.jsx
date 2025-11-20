@@ -5,7 +5,9 @@ import { useAuth } from "../context/AuthContext.jsx";
 const API_URL = "https://manos-hablan.fly.dev/api/v1";
 
 function ProfilePage() {
-  const { user, logout } = useAuth();
+  
+  const { user, logout, updateUser } = useAuth();
+
 
   // Estados locales (inicialmente vacíos, luego se llenan)
   const [fullName, setFullName] = useState("");
@@ -56,12 +58,14 @@ function ProfilePage() {
         throw new Error(data.message || "Error al actualizar el perfil");
       }
 
-      setMessage("Perfil actualizado correctamente ✔");
-
-      // También actualizar el usuario en AuthContext + localStorage
+      // ✅ Actualizar usuario en contexto (y localStorage) SIN recargar página
       const updatedUser = data.usuario;
-      localStorage.setItem("mqh_user", JSON.stringify(updatedUser));
-      window.location.reload(); // refrescar para actualizar AuthContext
+      updateUser(updatedUser);
+
+      // limpiar contraseña del formulario
+      setPassword("");
+
+      setMessage("Perfil actualizado correctamente ✔");
 
     } catch (err) {
       setError(err.message);
@@ -69,6 +73,7 @@ function ProfilePage() {
       setSaving(false);
     }
   };
+
 
   const handleCancel = () => {
     if (!user) return;
