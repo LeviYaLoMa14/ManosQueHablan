@@ -19,18 +19,34 @@ function RegisterPage() {
     setLoading(true);
 
     try {
-      // 👉 Aquí luego puedes llamar a tu API real:
-      // const res = await fetch("http://localhost:3000/api/register", { ... });
-      // const data = await res.json();
+      // 🔹 Llamada REAL a tu API en Fly.io
+      const res = await fetch("https://manos-hablan.fly.dev/api/v1/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nombre_completo: fullName,
+          correo: email,
+          contrasena: password,
+          descripcion: about || null,
+        }),
+      });
 
-      // Por ahora solo simulamos éxito y redirigimos al login:
-      setTimeout(() => {
-        setLoading(false);
-        navigate("/login"); // después de registrar, ir a iniciar sesión
-      }, 600);
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        // Backend ya manda mensajes claros en "message"
+        throw new Error(data.message || "Ocurrió un error al registrarte.");
+      }
+
+      // Si todo salió bien → mandar al login
+      setLoading(false);
+      navigate("/login");
+
     } catch (err) {
       console.error(err);
-      setError("Ocurrió un error al registrarte. Inténtalo de nuevo.");
+      setError(err.message || "Ocurrió un error al registrarte. Inténtalo de nuevo.");
       setLoading(false);
     }
   };
@@ -53,7 +69,6 @@ function RegisterPage() {
 
           {/* Columna derecha: formulario de registro */}
           <div className="md:w-1/2 w-full">
-            {/* Chip "Bienvenido" */}
             <div className="flex justify-center md:justify-start mb-8">
               <span className="inline-block bg-[#C07B4F] text-white px-10 py-2 rounded-full text-lg font-semibold">
                 Bienvenido
@@ -128,6 +143,7 @@ function RegisterPage() {
                 </button>
               </div>
             </form>
+
           </div>
         </div>
       </div>

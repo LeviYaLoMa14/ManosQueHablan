@@ -1,11 +1,25 @@
 // src/pages/MyProgressPage.jsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
 
 function MyProgressPage() {
   const navigate = useNavigate();
+  const { user } = useAuth(); // obtenemos el usuario logueado
 
-  // Datos simulados de progreso
+  // Si por alguna razón se llega aquí sin usuario (no debería por RequireAuth),
+  // mostramos un mensaje sencillo
+  if (!user) {
+    return (
+      <main className="min-h-[70vh] flex items-center justify-center">
+        <p className="text-stone-600">
+          Necesitas iniciar sesión para ver tu progreso.
+        </p>
+      </main>
+    );
+  }
+
+  // 🔹 Datos simulados de progreso
   const totalProgress = 65; // %
 
   const modules = [
@@ -34,28 +48,37 @@ function MyProgressPage() {
 
   const goToModule = (id, status) => {
     if (status === "locked") return;
+    // Por ahora solo simulación: la ruta /courses/:id la puedes hacer después
     navigate(`/courses/${id}`);
   };
 
   return (
     <main className="min-h-[80vh] flex flex-col items-center px-4 py-10">
       <div className="w-full max-w-4xl">
+        {/* Encabezado con saludo */}
+        <h2 className="text-lg text-stone-500 mb-2 text-center md:text-left">
+          Hola,{" "}
+          <span className="font-semibold text-stone-700">
+            {user.nombre_completo || user.correo}
+          </span>
+        </h2>
+
         {/* Título */}
         <h1 className="text-3xl md:text-4xl font-extrabold text-stone-700 text-center mb-8">
           Tu Progreso en el Curso:
         </h1>
 
         {/* Barra de progreso grande */}
-        <div className="w-full bg-[#F6F1E8] rounded-full h-12 flex items-center mb-10">
+        <div className="w-full bg-[#F6F1E8] rounded-full h-12 flex items-center mb-10 overflow-hidden">
           <div
-            className="h-12 rounded-full bg-[#C07B4F] flex items-center justify-center text-white text-lg font-semibold"
+            className="h-12 rounded-full bg-[#C07B4F] flex items-center justify-center text-white text-lg font-semibold transition-all"
             style={{ width: `${totalProgress}%` }}
           >
             {totalProgress}% Completado
           </div>
         </div>
 
-        {/* Lista de módulos */}
+        {/* Lista de módulos (simulados) */}
         <div className="space-y-4">
           {modules.map((mod) => {
             const isLocked = mod.status === "locked";
@@ -74,7 +97,6 @@ function MyProgressPage() {
               >
                 {/* Izquierda: icono + textos */}
                 <div className="flex items-center gap-4">
-                  {/* Icono circular tipo estado */}
                   <div
                     className={[
                       "w-12 h-12 rounded-full flex items-center justify-center",
@@ -100,7 +122,7 @@ function MyProgressPage() {
                   </div>
                 </div>
 
-                {/* Derecha: botón de acción */}
+                {/* Derecha: botón */}
                 <div>
                   <button
                     onClick={() => goToModule(mod.id, mod.status)}
