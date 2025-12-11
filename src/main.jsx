@@ -1,4 +1,75 @@
-  import React from "react";
+// src/main.jsx
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import "./index.css";
+
+import App from "./App.jsx";
+import HomePage from "./pages/HomePage.jsx";
+import LoginPage from "./pages/LoginPage.jsx";
+import RegisterPage from "./pages/RegisterPage.jsx";
+import ProfilePage from "./pages/ProfilePage.jsx";
+import MyProgressPage from "./pages/MyProgressPage.jsx";
+import ModulePage from "./pages/ModulePage.jsx";
+import { AuthProvider } from "./context/AuthContext.jsx";
+import RequireAuth from "./components/common/RequireAuth.jsx";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App />,
+    children: [
+      {
+        path: "/",
+        element: <HomePage />,
+      },
+      {
+        path: "/login",
+        element: <LoginPage />,
+      },
+      {
+        path: "/register",
+        element: <RegisterPage />,
+      },
+      // Rutas protegidas
+      {
+        path: "/profile",
+        element: (
+          <RequireAuth>
+            <ProfilePage />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: "/progress",
+        element: (
+          <RequireAuth>
+            <MyProgressPage />
+          </RequireAuth>
+        ),
+      },
+      // Ruta de módulo individual
+      {
+        path: "/courses/:id",
+        element: (
+          <RequireAuth>
+            <ModulePage />
+          </RequireAuth>
+        ),
+      },
+    ],
+  },
+]);
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
+  </React.StrictMode>
+);
+/*
+import React from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
@@ -64,3 +135,4 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     </AuthProvider>
   </React.StrictMode>
 );
+*/

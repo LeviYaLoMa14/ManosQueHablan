@@ -1,14 +1,33 @@
 // src/pages/MyProgressPage.jsx
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
+import { modulesData } from "../data/modulesData.js";
+import courseService from "../services/courseService.js";
 
 function MyProgressPage() {
   const navigate = useNavigate();
-  const { user } = useAuth(); // obtenemos el usuario logueado
+  const { user, updateUser } = useAuth();
+  const [userProgress, setUserProgress] = useState(0);
+  const [loading, setLoading] = useState(true);
 
-  // Si por alguna razón se llega aquí sin usuario (no debería por RequireAuth),
-  // mostramos un mensaje sencillo
+  // Cargar progreso del usuario
+  useEffect(() => {
+    const loadProgress = async () => {
+      if (user) {
+        try {
+          // El progreso viene del usuario (campo modulo)
+          const progress = user.modulo || 0;
+          setUserProgress(progress);
+        } catch (err) {
+          console.error("Error cargando progreso:", err);
+        }
+      }
+      setLoading(false);
+    };
+    loadProgress();
+  }, [user]);
+
   if (!user) {
     return (
       <main className="min-h-[70vh] flex items-center justify-center">
@@ -19,36 +38,35 @@ function MyProgressPage() {
     );
   }
 
-  // 🔹 Datos simulados de progreso
-  const totalProgress = 65; // %
+  if (loading) {
+    return (
+      <main className="min-h-[70vh] flex items-center justify-center">
+        <p className="text-stone-600">Cargando progreso...</p>
+      </main>
+    );
+  }
 
-  const modules = [
-    {
-      id: 1,
-      title: "Módulo 1: Introducción a LSM",
-      subtitle: "Temas básicos y alfabeto",
-      status: "completed", // completed | in_progress | locked
-      actionLabel: "Revisar",
-    },
-    {
-      id: 2,
-      title: "Módulo 2: Frases cotidianas",
-      subtitle: "Conversaciones del día a día",
-      status: "in_progress",
-      actionLabel: "Continuar",
-    },
-    {
-      id: 3,
-      title: "Módulo 3: Contextos Sociales",
-      subtitle: "Interacción en la comunidad",
-      status: "locked",
-      actionLabel: "Bloqueado",
-    },
-  ];
+  // Calcular progreso total (porcentaje basado en módulos completados)
+  const totalModules = modulesData.length;
+  const totalProgress = Math.round((userProgress / totalModules) * 100);
+
+  // Determinar estado de cada módulo
+  const getModuleStatus = (moduleId) => {
+    if (moduleId <= userProgress) return "completed";
+    if (moduleId === userProgress + 1) return "in_progress";
+    return "locked";
+  };
+
+  const getActionLabel = (status) => {
+    switch (status) {
+      case "completed": return "Revisar";
+      case "in_progress": return "Continuar";
+      default: return "Bloqueado";
+    }
+  };
 
   const goToModule = (id, status) => {
     if (status === "locked") return;
-    // Por ahora solo simulación: la ruta /courses/:id la puedes hacer después
     navigate(`/courses/${id}`);
   };
 
@@ -65,56 +83,58 @@ function MyProgressPage() {
 
         {/* Título */}
         <h1 className="text-3xl md:text-4xl font-extrabold text-stone-700 text-center mb-8">
-          Tu Progreso en el Curso:
+          Tu Progreso en el Curso de LSM
         </h1>
 
         {/* Barra de progreso grande */}
-        <div className="w-full bg-[#F6F1E8] rounded-full h-12 flex items-center mb-10 overflow-hidden">
+        <div className="w-full bg-[#F6F1E8] rounded-full h-12 flex items-center mb-4 overflow-hidden">
           <div
-            className="h-12 rounded-full bg-[#C07B4F] flex items-center justify-center text-white text-lg font-semibold transition-all"
-            style={{ width: `${totalProgress}%` }}
+            className="h-12 rounded-full bg-[#C07B4F] flex items-center justify-center text-white text-lg font-semibold transition-all duration-500"
+            style={{ width: `${Math.max(totalProgress, 8)}%` }}
           >
-            {totalProgress}% Completado
+            {totalProgress}%
           </div>
         </div>
+        
+        <p className="text-center text-stone-600 mb-10">
+          {userProgress} de {totalModules} módulos completados
+        </p>
 
-        {/* Lista de módulos (simulados) */}
+        {/* Lista de módulos */}
         <div className="space-y-4">
-          {modules.map((mod) => {
-            const isLocked = mod.status === "locked";
-            const isCompleted = mod.status === "completed";
-            const isInProgress = mod.status === "in_progress";
+          {modulesData.map((mod) => {
+            const status = getModuleStatus(mod.id);
+            const isLocked = status === "locked";
+            const isCompleted = status === "completed";
+            const isInProgress = status === "in_progress";
 
             return (
               <div
                 key={mod.id}
                 className={[
-                  "flex items-center justify-between px-6 py-4 rounded-2xl bg-[#F6F1E8]",
-                  isInProgress ? "border-2 border-[#C07B4F]" : "",
-                ]
-                  .filter(Boolean)
-                  .join(" ")}
+                  "flex flex-col sm:flex-row sm:items-center justify-between px-6 py-4 rounded-2xl bg-[#F6F1E8] gap-4",
+                  isInProgress ? "border-2 border-[#C07B4F] shadow-md" : "",
+                  isLocked ? "opacity-60" : "",
+                ].filter(Boolean).join(" ")}
               >
                 {/* Izquierda: icono + textos */}
                 <div className="flex items-center gap-4">
                   <div
                     className={[
-                      "w-12 h-12 rounded-full flex items-center justify-center",
+                      "w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold flex-shrink-0",
                       isCompleted
                         ? "bg-[#C07B4F] text-white"
                         : isInProgress
                         ? "border-2 border-[#C07B4F] bg-white text-[#C07B4F]"
                         : "border-2 border-stone-300 bg-white text-stone-400",
-                    ]
-                      .filter(Boolean)
-                      .join(" ")}
+                    ].filter(Boolean).join(" ")}
                   >
-                    {isCompleted ? "✓" : isInProgress ? "◔" : "○"}
+                    {isCompleted ? "✓" : mod.id}
                   </div>
 
                   <div>
                     <p className="font-semibold text-stone-800">
-                      {mod.title}
+                      Módulo {mod.id}: {mod.title}
                     </p>
                     <p className="text-sm text-stone-600">
                       {mod.subtitle}
@@ -123,26 +143,34 @@ function MyProgressPage() {
                 </div>
 
                 {/* Derecha: botón */}
-                <div>
+                <div className="flex justify-end sm:justify-start">
                   <button
-                    onClick={() => goToModule(mod.id, mod.status)}
+                    onClick={() => goToModule(mod.id, status)}
                     disabled={isLocked}
                     className={[
                       "px-6 py-2 rounded-full text-sm font-semibold transition-colors",
                       isLocked
-                        ? "bg-stone-400 text-white cursor-not-allowed opacity-90"
+                        ? "bg-stone-400 text-white cursor-not-allowed"
                         : "bg-[#C07B4F] text-white hover:bg-[#a96b42]",
-                    ]
-                      .filter(Boolean)
-                      .join(" ")}
+                    ].filter(Boolean).join(" ")}
                   >
-                    {mod.actionLabel}
+                    {getActionLabel(status)}
                   </button>
                 </div>
               </div>
             );
           })}
         </div>
+
+        {/* Mensaje de completado */}
+        {userProgress >= totalModules && (
+          <div className="mt-8 p-6 bg-green-50 border-2 border-green-500 rounded-2xl text-center">
+            <p className="text-2xl font-bold text-green-700 mb-2">🎉 ¡Felicidades!</p>
+            <p className="text-green-600">
+              Has completado todos los módulos del curso de Lengua de Señas Mexicana.
+            </p>
+          </div>
+        )}
       </div>
     </main>
   );
