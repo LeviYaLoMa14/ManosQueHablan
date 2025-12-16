@@ -245,7 +245,7 @@ export function AuthProvider({ children }) {
         throw new Error("Correo y contraseña son obligatorios.");
       }
 
-      // 🔹 Llamada REAL a tu API
+      //  Llamada REAL a tu API
       const res = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

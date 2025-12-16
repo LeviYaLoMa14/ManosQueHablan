@@ -85,30 +85,31 @@ export const modulesData = [
     },
     quiz: [
       {
-        question: '¿Qué seña representa la letra "A"?',
+        question: '¿Qué seña representa la letra de la imagen?',
         options: ['Letra "M"', 'Letra "A"', 'Letra "S"'],
         correct: 1,
         image: "A"
       },
       {
-        question: '¿Qué seña corresponde a la letra "B"?',
+        question: '¿Qué seña corresponde a la letra de la imagen?',
         options: ['"L"', '"B"', '"C"'],
         correct: 1,
         image: "B"
       },
       {
-        question: 'Selecciona la seña de la letra "E".',
+        question: 'Selecciona la seña de la letra de la imagen.',
         options: ['"E"', '"F"', '"O"'],
         correct: 0,
         image: "E"
       },
       {
-        question: 'Selecciona la secuencia correcta para deletrear "SOL".',
-        options: ['S-O-L', 'S-A-L', 'C-O-L'],
-        correct: 0
+        question: '¿Qué seña corresponde a la letra de la imagen?.',
+        options: ['S', 'A', 'O'],
+        correct: 2,
+        image: "O"
       },
       {
-        question: 'Identifica la letra "M".',
+        question: 'Identifica la letra:',
         options: ['"N"', '"M"', '"A"'],
         correct: 1,
         image: "M"
